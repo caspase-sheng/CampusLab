@@ -27,7 +27,13 @@ export function login(username: string, password: string): Promise<TokenOut> {
   );
 }
 
-/** GET /api/auth/me —— 取当前登录用户，未登录时 client 会按 401 处理。 */
+/**
+ * GET /api/auth/me —— 取当前登录用户。
+ *
+ * 传 skipAuthRedirect: true：me() 只在恢复登录态时被调用，401（token 过期或无效）
+ * 该由 AuthContext 自己判断怎么处理，不要让 client 直接 window.location.assign
+ * 硬跳转——那是整页刷新，会白闪一下；交给 RequireAuth 走 React 路由的软跳转更顺。
+ */
 export function me(): Promise<User> {
-  return get<User>("/api/auth/me");
+  return get<User>("/api/auth/me", { skipAuthRedirect: true });
 }

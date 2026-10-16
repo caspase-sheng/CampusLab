@@ -28,6 +28,23 @@ export function clearToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
 
+/**
+ * 带 HTTP 状态码的请求错误，让调用方能区分失败原因。
+ *
+ * status 为 0 是一个约定值，表示**压根没连上服务器**（fetch 在网络层就 reject 了：
+ * 后端没起、断网、请求被拒），而不是服务器返回的某个状态码。调用方据此把
+ * 「网络不通」和「服务器明确说不行（比如 401 表示 token 无效）」分开处理。
+ */
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
 /** request() 的选项。 */
 export interface RequestOptions {
   /** HTTP 方法，默认 GET。 */
@@ -95,7 +112,15 @@ export async function request<T>(
     init.body = JSON.stringify(body);
   }
 
-  const response = await fetch(path, init);
+  let response: Response;
+  try {
+    response = await fetch(path, init);
+  } catch {
+    // fetch 只有网络层失败才会 reject；拿到 4xx/5xx 也会正常 resolve。
+    // 统一包成 status = 0 的 ApiError，调用方靠 status 区分
+    // 「压根没连上服务器」和「服务器明确返回了某个错误」。
+    throw new ApiError("无法连接服务器，请检查网络或确认后端已启动", 0);
+  }
 
   // 先读文本再尝试 JSON.parse：既避免「空 body 上 JSON.parse 报错」，
   // 也避免「非 2xx 但 body 不是 JSON」时拿不到状态码兜底。
@@ -118,7 +143,7 @@ export async function request<T>(
       clearToken();
       redirectToLogin();
     }
-    throw new Error(message);
+    throw new ApiError(message, response.status);
   }
 
   // 2xx：拆信封。理论上 /api 全部是信封，非信封的情况兜底直接返回。
