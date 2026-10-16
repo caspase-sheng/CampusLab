@@ -36,11 +36,10 @@ export const site: SiteConfig = {
   description:
     'CampusLab 后端开发者，记录全栈校园学习平台的设计、实现与踩坑。',
   author: {
-    name: 'TODO 换成你的名字',
-    role: '大三 · 后端与联调',
+    name: 'caspase-sheng',
+    role: 'student',
     bio: '在做一个叫 CampusLab 的本地全栈校园学习平台：自研的 KV 存储引擎、课程表与 DDL 管理、算法可视化都塞在里面。平时习惯把实现里的取舍和踩过的坑写下来，也顺手记一些零散笔记。',
-    // TODO 换成你的邮箱
-    email: 'TODO 换成你的邮箱',
+    email: 'thfu_ao@163.com',
   },
   nav: [
     { label: '首页', href: '/' },
@@ -50,10 +49,9 @@ export const site: SiteConfig = {
     { label: '实验室', href: '/lab' },
     { label: '关于', href: '/about' },
   ],
-  // TODO 换成你自己的主页链接
   socials: [
-    { label: 'GitHub', href: 'https://TODO 换成你的 GitHub 主页' },
-    { label: 'Email', href: 'mailto:TODO 换成你的邮箱' },
+    { label: 'GitHub', href: 'https://github.com/caspase-sheng/' },
+    { label: 'Email', href: 'mailto:thfu_ao@163.com' },
   ],
   skills: [
     'Python / FastAPI / SQLAlchemy',
