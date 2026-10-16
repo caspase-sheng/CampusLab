@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+import { site, pageTitle } from '../site.config';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  /** 页面标题，会拼在站点标题前面 */
+  title?: string;
+  /** 页面描述，默认用站点描述 */
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle(title)}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-700 antialiased">
+    <div class="mx-auto flex min-h-screen max-w-3xl flex-col px-4 sm:px-6">
+      <Nav />
+      <main class="flex-1 py-10">
+        <slot />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

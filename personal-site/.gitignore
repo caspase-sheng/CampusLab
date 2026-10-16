@@ -1,0 +1,8 @@
+# personal-site 自己的忽略规则，不动仓库根目录的 .gitignore
+node_modules/
+dist/
+.astro/
+
+# 构建/编辑器产物
+npm-debug.log*
+*.local

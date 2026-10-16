@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SortingDemo from '../components/SortingDemo.tsx';
+---
+
+<!--
+  /lab 是「能直接点着玩的交互演示」的集合页，目前只有排序可视化一块。
+  组件用 client:visible 挂载：
+  - client:visible 表示组件进入视口时才 hydrate，用户没滚到这块就不下载、也不执行它的 JS，
+    对演示类组件比 client:load 更合适——首屏不会被一个可能根本没被看到的组件拖累。
+  - 这里刻意不用 client:only：SortingDemo 的初始数组是写死的，
+    服务端和客户端算出来的首屏一致，不存在 hydration mismatch，
+    所以让它走 SSR 是好事——没 JS 的时候也能看到一排柱子，只是点不动。
+-->
+<BaseLayout title="实验室" description="CampusLab 个人站上一些能直接点着玩的交互演示。">
+  <section>
+    <h1 class="text-2xl font-semibold text-slate-900">实验室</h1>
+    <p class="mt-4 text-slate-600">
+      这里放一些能直接点着玩的交互演示，都是一些我自己感兴趣、顺手做出来看看效果的小东西。
+      现在能玩的是排序算法的可视化。
+    </p>
+  </section>
+
+  <div class="mt-8">
+    <SortingDemo client:visible />
+  </div>
+</BaseLayout>

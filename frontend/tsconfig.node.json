@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    /* vite.config.ts 跑在 Node 里，单独用一份配置编译，避免把 DOM 的类型混进来。
+       被 tsconfig.json 通过 references 引用，所以必须是 composite；而 composite 项目
+       在 tsc -b 构建模式下不允许关掉 emit（否则报 TS6310），所以这里不写 noEmit，
+       改成把编译产物丢进 node_modules/.tmp（反正只是过一遍类型检查，产物没人用）。 */
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
+    "outDir": "./node_modules/.tmp/tsconfig.node",
+    "target": "ES2023",
+    "lib": ["ES2023"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": ["vite.config.ts"]
+}

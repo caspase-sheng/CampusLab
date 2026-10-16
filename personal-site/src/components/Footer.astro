@@ -1,0 +1,19 @@
+---
+// 页脚。作者名和社交链接都从 site.config.ts 读。
+import { site } from '../site.config';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="border-t border-slate-200 py-6 text-sm text-slate-500">
+  <div class="flex flex-wrap items-center justify-between gap-2">
+    <p>© {year} {site.author.name}</p>
+    <div class="flex gap-4">
+      {
+        site.socials.map((s) => (
+          <a href={s.href} class="transition-colors hover:text-slate-900">{s.label}</a>
+        ))
+      }
+    </div>
+  </div>
+</footer>

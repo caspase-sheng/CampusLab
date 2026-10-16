@@ -31,6 +31,8 @@ htmlcov/
 .env
 backend/.env
 backend/campuslab.db
+# ---- KV 段文件（运行时产物，不入库）----
+backend/data/
 
 # ---- Node / 前端 ----
 node_modules/

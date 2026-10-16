@@ -1,0 +1,26 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleHeader from '../../components/ArticleHeader.astro';
+
+// 只给非 draft 的笔记生成静态路径，draft: true 的笔记访问时返回 404。
+export async function getStaticPaths() {
+  const entries = await getCollection('notes', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title}>
+  <article>
+    <ArticleHeader title={entry.data.title} date={entry.data.date} tags={entry.data.tags} />
+    <div class="markdown-body mt-8">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

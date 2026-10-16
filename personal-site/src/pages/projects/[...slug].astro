@@ -1,0 +1,35 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ArticleHeader from '../../components/ArticleHeader.astro';
+
+// draft 详情的处理方式：直接让它「不存在」。
+// getStaticPaths 只为 !data.draft 的条目生成静态路径，
+// 所以 draft: true 的项目在构建产物里根本没有对应 HTML，
+// 访问它的 URL 会得到 404（静态站下比做重定向更简单也更符合直觉）。
+export async function getStaticPaths() {
+  const entries = await getCollection('projects', ({ data }) => !data.draft);
+  return entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <article>
+    <ArticleHeader
+      title={entry.data.title}
+      date={entry.data.date}
+      tags={entry.data.tags}
+      repo={entry.data.repo}
+      demo={entry.data.demo}
+    />
+    <div class="markdown-body mt-8">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>

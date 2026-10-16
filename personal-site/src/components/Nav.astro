@@ -1,0 +1,33 @@
+---
+// 顶部导航。导航项从 site.config.ts 读，增删项不用动这个组件。
+import { site } from '../site.config';
+
+const path = Astro.url.pathname;
+
+// 当前项高亮：首页要精确匹配，其余用前缀匹配，这样 /blog/xxx 也能把「博客」点亮
+function isActive(href: string): boolean {
+  if (href === '/') return path === '/';
+  return path === href || path.startsWith(`${href}/`);
+}
+---
+
+<header class="border-b border-slate-200">
+  <div class="flex flex-wrap items-center justify-between gap-3 py-5">
+    <a href="/" class="text-base font-semibold text-slate-900">{site.title}</a>
+    <nav class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+      {
+        site.nav.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              'transition-colors hover:text-slate-900',
+              isActive(item.href) ? 'font-medium text-slate-900' : 'text-slate-500',
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>

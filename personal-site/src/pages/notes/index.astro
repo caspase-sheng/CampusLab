@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EntryCard from '../../components/EntryCard.astro';
+
+// 同 projects / blog：目录里有什么就列什么，draft 一律隐藏，日期倒序。
+const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<BaseLayout title="笔记" description="零散的技术碎片">
+  <h1 class="text-2xl font-semibold text-slate-900">笔记</h1>
+  <p class="mt-2 text-sm text-slate-500">共 {notes.length} 条</p>
+
+  <div class="mt-6 grid gap-4">
+    {
+      notes.map((note) => (
+        <EntryCard
+          title={note.data.title}
+          date={note.data.date}
+          tags={note.data.tags}
+          href={`/notes/${note.id}`}
+        />
+      ))
+    }
+  </div>
+</BaseLayout>

@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EntryCard from '../../components/EntryCard.astro';
+
+// 与 projects 列表同理：遍历 src/content/blog/ 得到列表，
+// 新增 .md 自动出现，draft: true 自动隐藏，按日期倒序。
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<BaseLayout title="博客" description="实现思路和踩坑记录">
+  <h1 class="text-2xl font-semibold text-slate-900">博客</h1>
+  <p class="mt-2 text-sm text-slate-500">共 {posts.length} 篇</p>
+
+  <div class="mt-6 grid gap-4">
+    {
+      posts.map((post) => (
+        <EntryCard
+          title={post.data.title}
+          description={post.data.description}
+          date={post.data.date}
+          tags={post.data.tags}
+          href={`/blog/${post.id}`}
+        />
+      ))
+    }
+  </div>
+</BaseLayout>
