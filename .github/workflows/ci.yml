@@ -1,0 +1,66 @@
+name: CI
+
+# 触发条件：push 到 main，以及所有指向 main 的 PR
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # job 1：验证后端 —— 跑 pytest，覆盖 117 个用例。
+  # 用 conftest 里的临时 SQLite，不连真实数据库，也不需要任何 secrets。
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          cache-dependency-path: backend/requirements.txt
+      - name: 安装后端依赖
+        run: pip install -r requirements.txt
+      - name: 运行后端测试
+        run: python -m pytest tests/ -q
+
+  # job 2：验证前端 —— 先 build（含 TS 类型检查）再跑 node:test。
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - name: 安装前端依赖
+        run: npm ci
+      - name: 构建前端
+        run: npm run build
+      - name: 运行前端测试
+        run: npm test
+
+  # job 3：验证个人站 —— 纯静态 Astro 构建，不连后端，无测试，只需 build 通过。
+  personal-site:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: personal-site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+          cache-dependency-path: personal-site/package-lock.json
+      - name: 安装个人站依赖
+        run: npm ci
+      - name: 构建个人站
+        run: npm run build
