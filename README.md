@@ -2,6 +2,8 @@
 
 CampusLab 是一个本地运行的校园学习平台：一个 FastAPI 后端、一个 React 前端，外加一个用来放作品和笔记的 Astro 个人站。后端管课程表、DDL 和笔记的增删改查，另外自带一套自己写的 Bitcask 风格 KV 存储引擎；前端除了这几个业务页面，还有两个把算法过程回放成动画的可视化页；个人站是独立的静态站点，和前面两个不共用代码，它上面的排序可视化是从 frontend 复制并适配过来的，两边各自持有一份文件。
 
+**在线预览**：[个人站](https://caspase-sheng.github.io/CampusLab/) · [排序可视化演示](https://caspase-sheng.github.io/CampusLab/lab/)
+
 ## 仓库结构
 
 - `backend/`：FastAPI 应用。`app/api/` 是业务接口（auth / courses / deadlines / notes），`app/kv/` 是一套独立的 KV 存储引擎（带 `/kv` 路由），`app/models/`、`app/schemas/`、`app/db/` 是 SQLAlchemy 模型、Pydantic 模型和会话，`alembic/` 放迁移，`tests/` 放 pytest 用例，`scripts/bench_kv.py` 是个独立的存储性能对比脚本。
@@ -77,6 +79,10 @@ npm run dev
 ```
 
 产出静态站点用 `npm run build`，本地预览构建产物用 `npm run preview`。
+
+### 一键启动（可选）
+
+在仓库根执行 `.\dev.bat`：先检查三个子目录的依赖和 `backend\.env`，缺依赖只提示、不自动装；然后跑 `alembic upgrade head`，最后开三个新窗口分别起后端、前端和个人站。只想验证环境、不开窗口、也不跑迁移，用 `.\dev.bat -CheckOnly`。若报「禁止运行脚本」，先执行 `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`，或改用 `powershell -ExecutionPolicy Bypass -File .\dev.ps1`。
 
 ## 测试
 
