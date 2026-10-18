@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import EntryCard from '../../components/EntryCard.astro';
+import { withBase } from '../../lib/paths';
 
 // 同 projects / blog：目录里有什么就列什么，draft 一律隐藏，日期倒序。
 const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort(
@@ -20,7 +21,7 @@ const notes = (await getCollection('notes', ({ data }) => !data.draft)).sort(
           title={note.data.title}
           date={note.data.date}
           tags={note.data.tags}
-          href={`/notes/${note.id}`}
+          href={withBase(`/notes/${note.id}`)}
         />
       ))
     }

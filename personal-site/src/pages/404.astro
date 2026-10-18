@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../lib/paths';
 ---
 
 <BaseLayout title="页面不存在" description="404 · 页面不存在">
@@ -10,8 +11,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       链接可能写错了，或者这个页面已经被删掉。草稿（draft: true）的条目在这里本来就不存在。
     </p>
     <p class="mt-6 flex flex-wrap gap-4 text-sm">
-      <a href="/" class="text-slate-700 underline underline-offset-2 hover:text-slate-900">回到首页</a>
-      <a href="/blog" class="text-slate-700 underline underline-offset-2 hover:text-slate-900">看看博客</a>
+      <a href={withBase('/')} class="text-slate-700 underline underline-offset-2 hover:text-slate-900">回到首页</a>
+      <a href={withBase('/blog')} class="text-slate-700 underline underline-offset-2 hover:text-slate-900">看看博客</a>
     </p>
   </section>
 </BaseLayout>

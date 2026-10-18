@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import EntryCard from '../../components/EntryCard.astro';
+import { withBase } from '../../lib/paths';
 
 // 列表不是写死的数组，而是每次构建遍历 projects 目录的结果。
 // 所以往 src/content/projects/ 丢一个 .md，这个列表就自动多一张卡片。
@@ -23,7 +24,7 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).so
           description={project.data.description}
           date={project.data.date}
           tags={project.data.tags}
-          href={`/projects/${project.id}`}
+          href={withBase(`/projects/${project.id}`)}
           repo={project.data.repo}
         />
       ))

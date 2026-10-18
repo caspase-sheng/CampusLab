@@ -1,0 +1,66 @@
+name: Deploy personal site
+
+# 把 personal-site 构建成静态站后发到 GitHub Pages。
+# 触发条件是 push 到 main（也就是合并进主分支时自动发布），
+# 另外留了 workflow_dispatch，方便在 Actions 页面手动点一次重新发布。
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages 部署需要的三件套：读仓库内容、写 Pages、用 OIDC 拿 id-token 换取部署凭据。
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# group 固定成 pages，保证同一时间只有一个 Pages 部署在跑；
+# cancel-in-progress 设为 false：发布中途被打断会留下半截产物，宁可在后面排队。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # 这两个 job 默认都在 personal-site 目录下跑 run 命令，
+    # 所以下面的 npm ci / npm run build 不用自己 cd。
+    # 注意：defaults 只管 run 步骤，uses 步骤（checkout / upload 之类）还是在仓库根目录执行。
+    defaults:
+      run:
+        working-directory: personal-site
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: personal-site/package-lock.json
+      - name: 安装依赖
+        run: npm ci
+      # 为什么要在这里注入 PAGES_BASE=/CampusLab：
+      # GitHub Pages 的项目站地址是 https://caspase-sheng.github.io/CampusLab/，
+      # 那个 /CampusLab 是仓库名前缀，去不掉。astro.config.mjs 把 base 读成 process.env.PAGES_BASE，
+      # 本地不设这个变量时 base 是 '/'，链接不带前缀；CI 里设成 /CampusLab 之后，
+      # 页面里的站内链接会被 withBase() 统一拼上 /CampusLab，线上才不会 404。
+      - name: 构建（注入 Pages 子路径）
+        run: npm run build
+        env:
+          PAGES_BASE: /CampusLab
+      # path 必须写成 personal-site/dist（相对仓库根目录），不能只写 dist：
+      # 上面 defaults 的 working-directory 只作用于 run 步骤，这个 uses 步骤
+      # 仍然在仓库根目录执行，所以 dist 指的是仓库根的 dist（不存在），
+      # 而构建产物实际落在 personal-site/dist。
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: personal-site/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

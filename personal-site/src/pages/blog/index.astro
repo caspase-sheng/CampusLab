@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import EntryCard from '../../components/EntryCard.astro';
+import { withBase } from '../../lib/paths';
 
 // 与 projects 列表同理：遍历 src/content/blog/ 得到列表，
 // 新增 .md 自动出现，draft: true 自动隐藏，按日期倒序。
@@ -22,7 +23,7 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
           description={post.data.description}
           date={post.data.date}
           tags={post.data.tags}
-          href={`/blog/${post.id}`}
+          href={withBase(`/blog/${post.id}`)}
         />
       ))
     }

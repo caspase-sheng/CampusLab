@@ -1,24 +1,31 @@
 ---
 // 顶部导航。导航项从 site.config.ts 读，增删项不用动这个组件。
 import { site } from '../site.config';
+import { withBase } from '../lib/paths';
 
-const path = Astro.url.pathname;
+// 当前项高亮：首页要精确匹配，其余用前缀匹配，这样 /blog/xxx 也能把「博客」点亮。
+//
+// 注意这里不能直接拿 Astro.url.pathname 跟 item.href 比：
+// 线上 pathname 是 /CampusLab/lab，而 site.config.ts 里的 href 是不带前缀的 /lab，
+// 直接相等判断会永远为 false，导航高亮就全灭了。
+// 所以两边都过一遍 withBase，再各自去掉末尾斜杠，才能对齐。
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 
-// 当前项高亮：首页要精确匹配，其余用前缀匹配，这样 /blog/xxx 也能把「博客」点亮
 function isActive(href: string): boolean {
-  if (href === '/') return path === '/';
-  return path === href || path.startsWith(`${href}/`);
+  const target = withBase(href).replace(/\/$/, '') || '/';
+  if (href === '/') return path === target;
+  return path === target || path.startsWith(`${target}/`);
 }
 ---
 
 <header class="border-b border-slate-200">
   <div class="flex flex-wrap items-center justify-between gap-3 py-5">
-    <a href="/" class="text-base font-semibold text-slate-900">{site.title}</a>
+    <a href={withBase('/')} class="text-base font-semibold text-slate-900">{site.title}</a>
     <nav class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
       {
         site.nav.map((item) => (
           <a
-            href={item.href}
+            href={withBase(item.href)}
             class:list={[
               'transition-colors hover:text-slate-900',
               isActive(item.href) ? 'font-medium text-slate-900' : 'text-slate-500',
